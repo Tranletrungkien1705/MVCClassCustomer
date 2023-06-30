@@ -1,0 +1,45 @@
+﻿<input name="CatName" id="CatName" type="text" placeholder="Please enter" />
+<span id="mes_cat_name"></span>
+<input type="button" value="Add New Class" />
+<button>Submit</button>
+<script>
+    $(document).ready(function () {
+        $("input[type='button']").click(function () {
+            let CatName = $("input[name='CatName']").val()
+            if (CatName.length == 0) {
+                $("#mes_cat_name")
+
+                    .text("Please enter Class Name")
+                    .css("color", "red")
+            } else {
+                let NewCat = new Object();
+                NewCat.Name = CatName;
+                $.ajax({
+                    url: "https://localhost:7196/Class/CreatNew"
+                    , type: "POST"
+                    , dataType: "JSON"
+                    , data: JSON.stringify(NewCat)
+                    , contentType: "application/json"
+                    , async: false
+                    , success: function (data) {
+                        console.log(data);
+                        if (data.ClassDupplicated.errors[0].errorMessage.length > 0) {
+                            $("#mes_cat_name")
+                                .text(data.ClassDupplicated.errors[0].errorMessage)
+                                .css("color", "red");
+                        }
+                        else {
+                            window.location.replace("https://localhost:7196/Class");
+                        }
+                    }, error: function (data, status) {
+                        //let status=data.status;
+                        let dataResponse = data.responseJSON;
+                        $("#mes_cat_name")
+                            .text(dataResponse.errors.Name[0])
+                            .css("color", "red")
+                    }
+                });
+            }
+        });
+    });
+</script>
